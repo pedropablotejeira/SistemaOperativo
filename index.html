@@ -1,0 +1,666 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Evaluación Interactiva: Comandos de Linux</title>
+    <style>
+        :root {
+            --bg-color: #f4f6f9;
+            --card-bg: #ffffff;
+            --text-main: #2c3e50;
+            --text-muted: #7f8c8d;
+            --primary: #34495e;
+            --accent: #2980b9;
+            --success: #27ae60;
+            --error: #c0392b;
+            --border: #e2e8f0;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            line-height: 1.6;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 850px;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding: 20px;
+            background: var(--primary);
+            color: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        header h1 {
+            font-size: 24px;
+            margin-bottom: 5px;
+        }
+
+        header p {
+            color: #bdc3c7;
+            font-size: 14px;
+        }
+
+        .section-title {
+            margin: 25px 0 15px 0;
+            padding-bottom: 5px;
+            border-bottom: 2px solid var(--primary);
+            color: var(--primary);
+            font-size: 18px;
+        }
+
+        .quiz-card {
+            background: var(--card-bg);
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            border: 1px solid var(--border);
+            transition: all 0.3s ease;
+        }
+
+        .question-text {
+            font-weight: 600;
+            font-size: 16px;
+            margin-bottom: 15px;
+        }
+
+        .question-text code {
+            background: #f1f2f6;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-family: 'Courier New', Courier, monospace;
+            color: #e74c3c;
+        }
+
+        .options-container {
+            display: block;
+        }
+
+        .option-label {
+            display: block;
+            padding: 10px 15px;
+            background: #f8f9fa;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            margin-bottom: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: background 0.2s;
+        }
+
+        .option-label:hover {
+            background: #e9ecef;
+        }
+
+        .option-label input {
+            margin-right: 10px;
+        }
+
+        /* Clases de retroalimentación */
+        .correct-answer {
+            background-color: #d4edda !important;
+            border-color: #c3e6cb !important;
+            color: #155724;
+        }
+
+        .incorrect-answer {
+            background-color: #f8d7da !important;
+            border-color: #f5c6cb !important;
+            color: #721c24;
+        }
+
+        .feedback-text {
+            margin-top: 10px;
+            font-size: 13px;
+            font-weight: bold;
+            display: none;
+        }
+
+        .btn-container {
+            text-align: center;
+            margin: 40px 0 20px 0;
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+        }
+
+        .btn-submit {
+            background: var(--accent);
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            font-size: 16px;
+            font-weight: bold;
+            border-radius: 6px;
+            cursor: pointer;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            transition: background 0.2s;
+        }
+
+        .btn-submit:hover {
+            background: #2471a3;
+        }
+
+        .btn-reset {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            font-size: 16px;
+            font-weight: bold;
+            border-radius: 6px;
+            cursor: pointer;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            transition: background 0.2s;
+        }
+
+        .btn-reset:hover {
+            background: #2c3e50;
+        }
+
+        /* NUEVO ESTILO: Navegación de páginas */
+        .nav-container {
+            display: flex;
+            justify-content: flex-end;
+            margin: 20px 0 40px 0;
+            padding-top: 20px;
+            border-top: 1px dashed var(--border);
+        }
+
+        .btn-nav {
+            background: #e67e22;
+            color: white;
+            border: none;
+            padding: 12px 35px;
+            font-size: 16px;
+            font-weight: bold;
+            border-radius: 6px;
+            cursor: pointer;
+            text-decoration: none;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            transition: background 0.2s;
+            display: inline-block;
+        }
+
+        .btn-nav:hover {
+            background: #d35400;
+        }
+
+        #result-box {
+            display: none;
+            background: #e8f4f8;
+            border: 2px solid var(--accent);
+            border-radius: 8px;
+            padding: 20px;
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        #result-box h2 {
+            color: var(--accent);
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <header>
+        <h1>Simulador Práctico: Comandos de Linux</h1>
+        <p>Prueba tus conocimientos sobre la administración, redes, procesos y servicios en sistemas Linux</p>
+    </header>
+
+    <form id="quiz-form">
+        <div class="section-title">Cuestionario Aleatorio (Comandos del Profesor)</div>
+        
+        <!-- Aquí el motor de JavaScript inyectará las preguntas ordenadas aleatoriamente -->
+        <div id="quiz-container"></div>
+
+        <div class="btn-container">
+            <button type="button" class="btn-submit" onclick="checkAnswers()">Comprobar Respuestas</button>
+            <button type="button" class="btn-reset" onclick="initQuiz()">Reiniciar Examen</button>
+        </div>
+
+        <!-- ENLACE A PARTE 2 -->
+        <div class="nav-container">
+            <a href="parte2.html" class="btn-nav">Siguiente &rarr;</a>
+        </div>
+    </form>
+
+    <div id="result-box">
+        <h2>Resultados del Examen</h2>
+        <p id="score-text"></p>
+    </div>
+</div>
+
+<script>
+    // Banco completo de 25 preguntas basado estrictamente en el PDF del profesor
+    const questionsDatabase = [
+        {
+            id: "q1",
+            text: "¿Qué comando utilizarías para verificar de forma segura y completa las direcciones IP asignadas a todas las interfaces de red de tu máquina?",
+            type: "multiple",
+            options: [
+                { value: "a", text: "<code>ping</code>" },
+                { value: "b", text: "<code>ip a</code>" },
+                { value: "c", text: "<code>df -h</code>" }
+            ],
+            correct: "b",
+            feedback: "¡Correcto! 'ip a' es la instrucción que muestra las direcciones IP, máscaras y estados de todas las interfaces de red activas."
+        },
+        {
+            id: "q2",
+            text: "Si modificas un archivo de configuración del servidor web Apache, ¿qué comando debes ejecutar para aplicar los cambios sin reiniciar todo el sistema operativo?",
+            type: "multiple",
+            options: [
+                { value: "a", text: "<code>sudo systemctl restart apache2</code>" },
+                { value: "b", text: "<code>sudo apt install apache2 -y</code>" },
+                { value: "c", text: "<code>sudo systemctl stop apache2</code>" }
+            ],
+            correct: "a",
+            feedback: "¡Correcto! 'systemctl restart [servicio]' detiene y vuelve a arrancar el servicio para aplicar cambios de configuración de inmediato."
+        },
+        {
+            id: "q3",
+            text: "Tienes un proceso colgado en el sistema cuyo PID es 4589. ¿Cuál es el comando correcto para forzar su finalización inmediata y obligatoria?",
+            type: "multiple",
+            options: [
+                { value: "a", text: "<code>logout 4589</code>" },
+                { value: "b", text: "<code>top -9 4589</code>" },
+                { value: "c", text: "<code>kill -9 4589</code>" }
+            ],
+            correct: "c",
+            feedback: "¡Correcto! 'kill -9 PID' fuerza la terminación inmediata y obligatoria de un proceso colgado utilizando su identificador."
+        },
+        {
+            id: "q4",
+            text: "Deseas cambiar permanentemente el nombre identificativo de tu servidor en la red a 'ITSE'. ¿Cuál es la sintaxis correcta?",
+            type: "multiple",
+            options: [
+                { value: "a", text: "<code>hostnamectl ITSE</code>" },
+                { value: "b", text: "<code>sudo hostnamectl set-hostname ITSE</code>" },
+                { value: "c", text: "<code>cat /etc/os-release ITSE</code>" }
+            ],
+            correct: "b",
+            feedback: "¡Correcto! 'sudo hostnamectl set-hostname nuevo_nombre' modifica de forma permanente el nombre identificativo de la máquina en la red."
+        },
+        {
+            id: "q5",
+            text: "¿Qué acción realiza de forma combinada la sintaxis <code>sudo apt update -y && sudo apt upgrade -y</code>?",
+            type: "multiple",
+            options: [
+                { value: "a", text: "Actualiza el listado de paquetes disponibles e instala todas las actualizaciones confirmando 'Sí' automáticamente." },
+                { value: "b", text: "Elimina todos los paquetes obsoletos y dependencias colgadas sin consultar." },
+                { value: "c", text: "Instala el servidor SSH y el servidor Apache en una sola línea de ejecución." }
+            ],
+            correct: "a",
+            feedback: "¡Correcto! El operador '&&' permite sincronizar los repositorios con update y, si tiene éxito, instalar el software actualizado con upgrade."
+        },
+        {
+            id: "q6",
+            text: "El comando <code>cd ..</code> te desplaza inmediatamente a la raíz principal de todo el sistema de archivos (<code>/</code>).",
+            type: "vf",
+            options: [
+                { value: "V", text: "Verdadero" },
+                { value: "F", text: "Falso" }
+            ],
+            correct: "F",
+            feedback: "¡Correcto! Falso. 'cd ..' sube un nivel en el árbol de carpetas (retrocede al directorio padre). Para ir a la raíz absoluta se usa 'cd /'."
+        },
+        {
+            id: "q7",
+            text: "Ejecutar la instrucción <code>system status ufw</code> es sintácticamente correcto en Linux para ver el estado del firewall.",
+            type: "vf",
+            options: [
+                { value: "V", text: "Verdadero" },
+                { value: "F", text: "Falso" }
+            ],
+            correct: "F",
+            feedback: "¡Correcto! Falso. La sintaxis del comando base requiere invocar la utilidad completa: 'sudo systemctl status ufw'."
+        },
+        {
+            id: "q8",
+            text: "El comando <code>sudo ufw allow 80</code> sirve para permitir el tráfico de red entrante a través del puerto del servicio web.",
+            type: "vf",
+            options: [
+                { value: "V", text: "Verdadero" },
+                { value: "F", text: "Falso" }
+            ],
+            correct: "V",
+            feedback: "¡Correcto! Verdadero. 'sudo ufw allow puerto' habilita la entrada de conexiones para el puerto específico indicado (ej. puerto 80)."
+        },
+        {
+            id: "q9",
+            text: "La diferencia entre <code>ls</code> y <code>ls -l</code> es que el segundo muestra los archivos con detalles adicionales como permisos, tamaños y propietarios.",
+            type: "vf",
+            options: [
+                { value: "V", text: "Verdadero" },
+                { value: "F", text: "Falso" }
+            ],
+            correct: "V",
+            feedback: "¡Correcto! Verdadero. 'ls -l' lista detalladamente mostrando permisos, propietario, tamaño y la fecha de última modificación."
+        },
+        {
+            id: "q10",
+            text: "El comando <code>sudo -i</code> abre una consola interactiva manteniendo de forma segura el entorno del usuario root.",
+            type: "vf",
+            options: [
+                { value: "V", text: "Verdadero" },
+                { value: "F", text: "Falso" }
+            ],
+            correct: "V",
+            feedback: "¡Correcto! Verdadero. 'sudo -i' abre una shell interactiva como root cargando su entorno de forma segura utilizando los privilegios del usuario actual."
+        },
+        {
+            id: "q11",
+            text: "¿Qué comando utilizarías si deseas cambiar la contraseña de la cuenta del usuario actual (por ejemplo, el usuario 'ppt')?",
+            type: "multiple",
+            options: [
+                { value: "a", text: "<code>passwd ppt</code>" },
+                { value: "b", text: "<code>whoami ppt</code>" },
+                { value: "c", text: "<code>su ppt</code>" }
+            ],
+            correct: "a",
+            feedback: "¡Correcto! 'passwd [usuario]' cambia la contraseña de una cuenta de usuario específica en el sistema."
+        },
+        {
+            id: "q12",
+            text: "¿Qué comando muestra el nombre exacto del usuario que tiene iniciada la sesión actualmente en la terminal?",
+            type: "multiple",
+            options: [
+                { value: "a", text: "<code>hostnamectl</code>" },
+                { value: "b", text: "<code>whoami</code>" },
+                { value: "c", text: "<code>pwd</code>" }
+            ],
+            correct: "b",
+            feedback: "¡Correcto! 'whoami' despliega el nombre del usuario activo que ha iniciado sesión en esa terminal."
+        },
+        {
+            id: "q13",
+            text: "Si deseas convertirte en el usuario súper usuario (root) cargando completamente todo su entorno y variables de sistema mediante la shell convencional, ¿qué comando directo empleas?",
+            type: "multiple",
+            options: [
+                { value: "a", text: "<code>exit</code>" },
+                { value: "b", text: "<code>logout</code>" },
+                { value: "c", text: "<code>su</code>" }
+            ],
+            correct: "c",
+            feedback: "¡Correcto! El comando 'su' cambia la sesión de terminal para convertirse en el súper usuario (root) cargando su entorno completo."
+        },
+        {
+            id: "q14",
+            text: "Para cerrar de forma segura la sesión del usuario actual en la terminal interactiva, ¿cuál de los siguientes comandos del profesor es válido?",
+            type: "multiple",
+            options: [
+                { value: "a", text: "<code>clear</code>" },
+                { value: "b", text: "<code>logout</code>" },
+                { value: "c", text: "<code>top</code>" }
+            ],
+            correct: "b",
+            feedback: "¡Correcto! 'logout' o 'exit' cierran y terminan la sesión actual de la terminal interactiva."
+        },
+        {
+            id: "q15",
+            text: "¿Qué comando utilizarías para auditar el espacio disponible y utilizado en los discos duros en formato legible (como Gigabytes o Megabytes)?",
+            type: "multiple",
+            options: [
+                { value: "a", text: "<code>df -h</code>" },
+                { value: "b", text: "<code>ip a</code>" },
+                { value: "c", text: "<code>date</code>" }
+            ],
+            correct: "a",
+            feedback: "¡Correcto! 'df -h' muestra el espacio disponible y utilizado en un formato legible para humanos (-h significa human-readable)."
+        },
+        {
+            id: "q16",
+            text: "¿Qué comando muestra en pantalla la ruta absoluta (completa) del directorio de trabajo actual donde te encuentras parado?",
+            type: "multiple",
+            options: [
+                { value: "a", text: "<code>ls</code>" },
+                { value: "b", text: "<code>pwd</code>" },
+                { value: "c", text: "<code>mkdir</code>" }
+            ],
+            correct: "b",
+            feedback: "¡Correcto! 'pwd' (Print Working Directory) muestra la ruta absoluta del directorio de trabajo actual."
+        },
+        {
+            id: "q17",
+            text: "Deseas crear una nueva carpeta llamada 'Prueba' en el directorio actual. ¿Cuál es el comando correcto?",
+            type: "multiple",
+            options: [
+                { value: "a", text: "<code>touch Prueba</code>" },
+                { value: "b", text: "<code>nano Prueba</code>" },
+                { value: "c", text: "<code>mkdir Prueba</code>" }
+            ],
+            correct: "c",
+            feedback: "¡Correcto! 'mkdir nombre_carpeta' crea un nuevo directorio en la ruta actual."
+        },
+        {
+            id: "q18",
+            text: "Si necesitas crear un archivo de texto vacío llamado 'archivo.txt', ¿qué comando directo empleas?",
+            type: "multiple",
+            options: [
+                { value: "a", text: "<code>touch archivo.txt</code>" },
+                { value: "b", text: "<code>cat archivo.txt</code>" },
+                { value: "c", text: "<code>rm archivo.txt</code>" }
+            ],
+            correct: "a",
+            feedback: "¡Correcto! 'touch' crea un archivo vacío con el nombre y extensión especificados."
+        },
+        {
+            id: "q19",
+            text: "¿Qué comando despliega de forma completa el contenido entero de un archivo de texto (como /etc/os-release) directamente en la terminal?",
+            type: "multiple",
+            options: [
+                { value: "a", text: "<code>mkdir</code>" },
+                { value: "b", text: "<code>cat</code>" },
+                { value: "c", text: "<code>clear</code>" }
+            ],
+            correct: "b",
+            feedback: "¡Correcto! 'cat' despliega el contenido entero de uno o varios archivos de texto directamente en la terminal."
+        },
+        {
+            id: "q20",
+            text: "Para abrir un editor de texto interactivo sencillo desde la propia terminal y modificar un documento, el profesor recomienda usar:",
+            type: "multiple",
+            options: [
+                { value: "a", text: "<code>nano</code>" },
+                { value: "b", text: "<code>top</code>" },
+                { value: "c", text: "<code>ping</code>" }
+            ],
+            correct: "a",
+            feedback: "¡Correcto! 'nano archivo' abre un editor de texto básico e intuitivo directamente desde la línea de comandos."
+        },
+        {
+            id: "q21",
+            text: "El comando <code>sudo apt autoremove -y</code> sirve para desinstalar el servidor web Apache de forma obligatoria.",
+            type: "vf",
+            options: [
+                { value: "V", text: "Verdadero" },
+                { value: "F", text: "Falso" }
+            ],
+            correct: "F",
+            feedback: "¡Correcto! Falso. 'autoremove' elimina del sistema las dependencias automáticas de software que ya no son necesarias por ningún programa."
+        },
+        {
+            id: "q22",
+            text: "El comando <code>clear</code> elimina permanentemente los archivos del historial para liberar espacio en el disco duro.",
+            type: "vf",
+            options: [
+                { value: "V", text: "Verdadero" },
+                { value: "F", text: "Falso" }
+            ],
+            correct: "F",
+            feedback: "¡Correcto! Falso. 'clear' solo limpia de forma visual el contenido previo de la pantalla de la terminal."
+        },
+        {
+            id: "q23",
+            text: "Si ejecutas <code>sudo ufw disable</code>, desactivas por completo la protección del cortafuegos, permitiendo todo el tráfico entrante y saliente.",
+            type: "vf",
+            options: [
+                { value: "V", text: "Verdadero" },
+                { value: "F", text: "Falso" }
+            ],
+            correct: "V",
+            feedback: "¡Correcto! Verdadero. 'disable' apaga por completo las restricciones globales de UFW."
+        },
+        {
+            id: "q24",
+            text: "Para verificar si el servicio de acceso remoto SSH está activo, detenido o tiene errores, el comando correcto es <code>sudo systemctl status ssh</code>.",
+            type: "vf",
+            options: [
+                { value: "V", text: "Verdadero" },
+                { value: "F", text: "Falso" }
+            ],
+            correct: "V",
+            feedback: "¡Correcto! Verdadero. 'systemctl status ssh' comprueba las condiciones operativas actuales de dicho servicio."
+        },
+        {
+            id: "q25",
+            text: "El comando <code>top</code> muestra en tiempo real los procesos activos, el uso de CPU y el estado de la memoria RAM de manera interactiva.",
+            type: "vf",
+            options: [
+                { value: "V", text: "Verdadero" },
+                { value: "F", text: "Falso" }
+            ],
+            correct: "V",
+            feedback: "¡Correcto! Verdadero. 'top' es el monitor dinámico de recursos y procesos nativo de la consola de Linux."
+        }
+    ];
+
+    let randomizedQuestions = [];
+
+    // Función constructora para mezclar un arreglo (Algoritmo Fisher-Yates)
+    function shuffle(array) {
+        let currentIndex = array.length, randomIndex;
+        while (currentIndex != 0) {
+            randomIndex = Math.floor(Math.random() * currentIndex);
+            currentIndex--;
+            [array[currentIndex], array[randomIndex]] = [array[randomIndex], array[currentIndex]];
+        }
+        return array;
+    }
+
+    // Inicializa y renderiza el cuestionario aleatorio
+    function initQuiz() {
+        // Ocultar caja de resultados previa
+        document.getElementById('result-box').style.display = "none";
+        
+        // Clonar la base de datos de preguntas y mezclarlas por completo
+        randomizedQuestions = JSON.parse(JSON.stringify(questionsDatabase));
+        shuffle(randomizedQuestions);
+
+        const container = document.getElementById('quiz-container');
+        container.innerHTML = ""; // Limpiar contenido previo
+
+        // Generar el HTML de las preguntas de forma dinámica
+        randomizedQuestions.forEach((q, index) => {
+            // Mezclar también las opciones de la pregunta si es de tipo opción múltiple
+            if (q.type === "multiple") {
+                shuffle(q.options);
+            }
+
+            const card = document.createElement('div');
+            card.className = "quiz-card";
+            card.setAttribute('data-question', q.id);
+
+            let optionsHTML = "";
+            q.options.forEach(opt => {
+                optionsHTML += `
+                    <label class="option-label">
+                        <input type="radio" name="${q.id}" value="${opt.value}"> ${opt.text}
+                    </label>
+                `;
+            });
+
+            card.innerHTML = `
+                <div class="question-text">${index + 1}. ${q.text}</div>
+                <div class="options-container">
+                    ${optionsHTML}
+                </div>
+                <div class="feedback-text"></div>
+            `;
+            container.appendChild(card);
+        });
+    }
+
+    // Comprobar respuestas evaluando la selección actual
+    function checkAnswers() {
+        let score = 0;
+        const totalQuestions = randomizedQuestions.length;
+
+        // Buscar las respuestas correctas correlacionadas desde la base de datos original
+        const answerMap = {};
+        const feedbackMap = {};
+        questionsDatabase.forEach(item => {
+            answerMap[item.id] = item.correct;
+            feedbackMap[item.id] = item.feedback;
+        });
+
+        randomizedQuestions.forEach(q => {
+            const card = document.querySelector(`[data-question="${q.id}"]`);
+            const options = card.querySelectorAll('input[type="radio"]');
+            const feedbackDiv = card.querySelector('.feedback-text');
+            let selectedValue = null;
+
+            // Limpiar estilos anteriores
+            options.forEach(option => {
+                option.parentElement.classList.remove('correct-answer', 'incorrect-answer');
+                if (option.checked) {
+                    selectedValue = option.value;
+                }
+            });
+
+            const correctVal = answerMap[q.id];
+
+            if (selectedValue === correctVal) {
+                score++;
+                options.forEach(option => {
+                    if (option.checked) option.parentElement.classList.add('correct-answer');
+                });
+                feedbackDiv.innerHTML = feedbackMap[q.id];
+                feedbackDiv.style.color = "var(--success)";
+            } else {
+                options.forEach(option => {
+                    if (option.checked) option.parentElement.classList.add('incorrect-answer');
+                    if (option.value === correctVal) option.parentElement.classList.add('correct-answer');
+                });
+                feedbackDiv.innerHTML = "Incorrecto. " + feedbackMap[q.id];
+                feedbackDiv.style.color = "var(--error)";
+            }
+            feedbackDiv.style.display = "block";
+        });
+
+        // Desplegar resultados globales calculados
+        const resultBox = document.getElementById('result-box');
+        const scoreText = document.getElementById('score-text');
+        const finalPercentage = ((score / totalQuestions) * 100).toFixed(0);
+        
+        scoreText.innerHTML = `Has respondido correctamente <strong>${score}</strong> de <strong>${totalQuestions}</strong> preguntas.<br>Tu nota final es: <strong>${finalPercentage}/100</strong>`;
+        resultBox.style.display = "block";
+        
+        resultBox.scrollIntoView({ behavior: 'smooth' });
+    }
+
+    // Lanzamiento automático al cargar la ventana
+    window.onload = initQuiz;
+</script>
+
+</body>
+</html>

@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Autoevaluación: Comandos Linux (Aleatorio)</title>
+    <style>
+        :root {
+            --bg-color: #0f172a;
+            --card-bg: #1e293b;
+            --text-color: #f8fafc;
+            --text-muted: #94a3b8;
+            --accent-color: #38bdf8;
+            --success: #22c55e;
+            --error: #ef4444;
+            --border-color: #334155;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            padding: 2rem 1rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 2.5rem;
+            max-width: 800px;
+        }
+
+        header h1 {
+            font-size: 2.2rem;
+            color: var(--accent-color);
+            margin-bottom: 0.5rem;
+        }
+
+        header p {
+            color: var(--text-muted);
+            font-size: 1.1rem;
+        }
+
+        .quiz-container {
+            width: 100%;
+            max-width: 800px;
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        .question-card {
+            background-color: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 1.5rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            transition: transform 0.2s, border-color 0.2s;
+        }
+
+        .question-card:hover {
+            border-color: #475569;
+        }
+
+        .definition {
+            font-size: 1.1rem;
+            font-weight: 500;
+            margin-bottom: 1rem;
+            line-height: 1.5;
+        }
+
+        .input-group {
+            display: flex;
+            gap: 0.5rem;
+            align-items: center;
+        }
+
+        .command-input {
+            flex: 1;
+            background-color: #0f172a;
+            border: 2px solid var(--border-color);
+            border-radius: 6px;
+            padding: 0.75rem 1rem;
+            color: #38bdf8;
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 1.05rem;
+            font-weight: bold;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        .command-input:focus {
+            border-color: var(--accent-color);
+        }
+
+        .feedback {
+            margin-top: 0.75rem;
+            font-size: 0.95rem;
+            font-weight: 600;
+            display: none;
+        }
+
+        .feedback.correct {
+            color: var(--success);
+            display: block;
+        }
+
+        .feedback.incorrect {
+            color: var(--error);
+            display: block;
+        }
+
+        .actions {
+            margin-top: 2rem;
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            width: 100%;
+            max-width: 800px;
+        }
+
+        button {
+            padding: 0.75rem 2rem;
+            font-size: 1.1rem;
+            font-weight: 600;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background-color 0.2s, transform 0.1s;
+        }
+
+        .btn-primary {
+            background-color: var(--accent-color);
+            color: #0f172a;
+        }
+
+        .btn-primary:hover {
+            background-color: #7dd3fc;
+        }
+
+        .btn-primary:active {
+            transform: scale(0.98);
+        }
+
+        .btn-secondary {
+            background-color: var(--border-color);
+            color: var(--text-color);
+        }
+
+        .btn-secondary:hover {
+            background-color: #475569;
+        }
+
+        /* NUEVO ESTILO: Navegación de páginas */
+        .nav-container {
+            margin-top: 3rem;
+            display: flex;
+            justify-content: flex-start;
+            width: 100%;
+            max-width: 800px;
+            padding-top: 1.5rem;
+            border-top: 1px dashed var(--border-color);
+        }
+
+        .btn-nav {
+            background-color: #e67e22;
+            color: white;
+            padding: 0.75rem 2rem;
+            font-size: 1.1rem;
+            font-weight: 600;
+            border-radius: 8px;
+            text-decoration: none;
+            transition: background-color 0.2s;
+            display: inline-block;
+        }
+
+        .btn-nav:hover {
+            background-color: #d35400;
+        }
+
+        #score-board {
+            text-align: center;
+            font-size: 1.3rem;
+            margin-top: 1.5rem;
+            font-weight: bold;
+            color: var(--accent-color);
+            display: none;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>Autoevaluación de Comandos Linux</h1>
+        <p>Las preguntas aparecen en orden aleatorio cada vez. ¡Pon a prueba tu memoria!</p>
+    </header>
+
+    <div class="quiz-container" id="quiz">
+        <!-- Las preguntas se generarán dinámicamente aquí de forma aleatoria -->
+    </div>
+
+    <div class="actions">
+        <button class="btn-primary" onclick="comprobarRespuestas()">Comprobar Respuestas</button>
+        <button class="btn-secondary" onclick="location.reload()">Reiniciar Examen</button>
+    </div>
+
+    <div id="score-board"></div>
+
+    <!-- ENLACE DE REGRESO A INDEX -->
+    <div class="nav-container">
+        <a href="index.html" class="btn-nav">&larr; Anterior</a>
+    </div>
+
+    <script>
+        // Listado de comandos original
+        const bancoPreguntas = [
+            { id: 1, cmd: "passwd", def: "Cambia la contraseña de una cuenta de usuario." },
+            { id: 2, cmd: "sudo passwd root", def: "Permite asignar o cambiar la contraseña del usuario administrador del sistema (root) utilizando privilegios elevados." },
+            { id: 3, cmd: "whoami", def: "Muestra el nombre del usuario actual que ha iniciado sesión en la terminal." },
+            { id: 4, cmd: "su", def: "Cambia la sesión de terminal para convertirse en el usuario súper usuario (root), cargando completamente su entorno y variables de sistema." },
+            { id: 5, cmd: "sudo -i", def: "Abre una shell interactiva como el usuario root utilizando los privilegios de sudo del usuario actual, cargando el entorno de root de forma segura." },
+            { id: 6, cmd: "logout", def: "Cierra la sesión del usuario actual en la shell o terminal interactiva actual." },
+            { id: 7, cmd: "exit", def: "Termina y cierra la sesión actual de la terminal o el script en ejecución." },
+            { id: 8, cmd: "hostnamectl", def: "Consulta y modifica el nombre del equipo (hostname) y la información de la arquitectura del sistema." },
+            { id: 9, cmd: "sudo hostnamectl set-hostname", def: "Modifica de forma permanente el nombre identificativo de la máquina en la red." },
+            { id: 10, cmd: "df -h", def: "Muestra el espacio disponible y utilizado en los discos duros y sistemas de archivos en un formato legible para humanos (GigaBytes, MegaBytes)." },
+            { id: 11, cmd: "date", def: "Muestra o configura la fecha y hora actual del sistema." },
+            { id: 12, cmd: "reboot", def: "Reinicia el equipo de forma inmediata desde la terminal." },
+            { id: 13, cmd: "shutdown", def: "Apaga o programa el apagado/reinicio del sistema de manera segura." },
+            { id: 14, cmd: "pwd", def: "Muestra la ruta absoluta del directorio de trabajo actual." },
+            { id: 15, cmd: "ls", def: "Lista los archivos y carpetas que se encuentran dentro del directorio actual." },
+            { id: 16, cmd: "ls -l", def: "Lista los archivos detalladamente mostrando permisos, propietario, tamaño y la fecha de última modificación." },
+            { id: 17, cmd: "cd ..", def: "Sube un nivel en el árbol de carpetas (retrocede al directorio padre)." },
+            { id: 18, cmd: "cd /", def: "Se desplaza directamente a la raíz del sistema de archivos de Linux." },
+            { id: 19, cmd: "mkdir", def: "Crea un nuevo directorio o carpeta en la ruta actual." },
+            { id: 20, cmd: "touch", def: "Crea un archivo vacío con el nombre y extensión especificados." },
+            { id: 21, cmd: "rm", def: "Elimina archivos o directorios y todo su contenido de forma recursiva." },
+            { id: 22, cmd: "cat", def: "Despliega el contenido entero de uno o varios archivos de texto directamente en la terminal." },
+            { id: 23, cmd: "cat /etc/os-release", def: "Muestra la información oficial sobre la distribución de Linux que está instalada." },
+            { id: 24, cmd: "nano", def: "Abre un editor de texto sencillo desde la propia terminal para crear o modificar archivos." },
+            { id: 25, cmd: "clear", def: "Limpia visualmente todo el contenido previo de la pantalla de la terminal." },
+            { id: 26, cmd: "top", def: "Muestra de forma interactiva y en tiempo real los procesos en ejecución, el uso de CPU, memoria RAM y el estado del sistema." },
+            { id: 27, cmd: "kill -9", def: "Fuerza la terminación inmediata y obligatoria de un proceso colgado utilizando su número identificador (PID)." },
+            { id: 28, cmd: "ping", def: "Verifica la conectividad y el estado de la comunicación de red con otro equipo o servidor enviando paquetes de prueba." },
+            { id: 29, cmd: "ip a", def: "Muestra las direcciones IP, máscaras y estados de todas las interfaces de red activas en el sistema." },
+            { id: 30, cmd: "ifconfig", def: "Muestra y configura los parámetros de las interfaces de red (Requiere herramientas heredadas net-tools)." },
+            { id: 31, cmd: "sudo apt update -y && sudo apt upgrade -y", def: "Actualiza primero la lista de paquetes disponibles en los repositorios externos y, si tiene éxito, instala todas las actualizaciones de software disponibles confirmando 'Si' de forma automática." },
+            { id: 32, cmd: "sudo apt update -y", def: "Actualiza la base de datos local de tu sistema Linux con la lista de los paquetes y programas más recientes disponibles en los repositorios de Internet." },
+            { id: 33, cmd: "sudo apt upgrade -y", def: "Descarga e instala los paquetes de software a sus últimas versiones disponibles." },
+            { id: 34, cmd: "sudo apt autoremove -y", def: "Elimina del sistema todas las dependencias y paquetes de software que se instalaron automáticamente y que ya no son necesarios." },
+            { id: 35, cmd: "sudo apt install apache2 -y", def: "Descarga e instala de manera automatizada el servidor web Apache en el sistema sin solicitar confirmaciones manuales." },
+            { id: 36, cmd: "sudo apt install openssh-server -y", def: "Descarga e instala el servicio de servidor SSH para permitir conexiones seguras y administración remota de la terminal." },
+            { id: 37, cmd: "sudo systemctl status", def: "Comprueba si un servicio está activo, detenido o si tiene errores. (Comando Base)" },
+            { id: 38, cmd: "sudo systemctl stop", def: "Detiene la ejecución del servicio de forma inmediata. (Comando Base)" },
+            { id: 39, cmd: "sudo systemctl start", def: "Arranca e inicia un servicio que estaba apagado. (Comando Base)" },
+            { id: 40, cmd: "sudo systemctl restart", def: "Detiene y vuelve a arrancar el servicio para aplicar cambios de configuración. (Comando Base)" },
+            { id: 41, cmd: "sudo ufw status", def: "Muestra si el cortafuegos del sistema está activo o inactivo, junto con las reglas de tráfico configuradas." },
+            { id: 42, cmd: "sudo ufw enable", def: "Enciende y activa las reglas de protección del cortafuegos UFW para bloquear o permitir tráfico en el sistema." },
+            { id: 43, cmd: "sudo ufw disable", def: "Desactiva por completo la protección del cortafuegos, permitiendo todo el tráfico entrante y saliente." },
+            { id: 44, cmd: "sudo ufw allow", def: "Habilita la entrada de conexiones para un puerto específico o servicio determinado." },
+            { id: 45, cmd: "sudo ufw deny", def: "Bloquea y prohíbe el tráfico entrante en un puerto o protocolo específico de manera inmediata." }
+        ];
+
+        // Función para mezclar un array (Algoritmo Fisher-Yates)
+        function mezclarArray(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+            return array;
+        }
+
+        // Mezclamos el banco de preguntas al cargar la página
+        const preguntasMezcladas = mezclarArray([...bancoPreguntas]);
+
+        // Renderizar dinámicamente las tarjetas de preguntas en orden aleatorio
+        const quizContainer = document.getElementById('quiz');
+        
+        preguntasMezcladas.forEach((item, index) => {
+            const card = document.createElement('div');
+            card.className = 'question-card';
+            card.innerHTML = `
+                <div class="definition"><strong>${index + 1}.</strong> ${item.def}</div>
+                <div class="input-group">
+                    <input type="text" class="command-input" data-id="${item.id}" placeholder="Escribe el comando aquí..." autocomplete="off" spellcheck="false">
+                </div>
+                <div class="feedback" id="feedback-${item.id}"></div>
+            `;
+            quizContainer.appendChild(card);
+        });
+
+        // Función para validar las respuestas
+        function comprobarRespuestas() {
+            let correctas = 0;
+            const inputs = document.querySelectorAll('.command-input');
+
+            inputs.forEach(input => {
+                const id = parseInt(input.getAttribute('data-id'));
+                const pregunta = bancoPreguntas.find(p => p.id === id);
+                const respuestaUsuario = input.value.trim().replace(/\s+/g, ' '); 
+                const feedbackDiv = document.getElementById(`feedback-${id}`);
+
+                if (respuestaUsuario.toLowerCase() === pregunta.cmd.toLowerCase()) {
+                    correctas++;
+                    feedbackDiv.textContent = `✓ ¡Correcto!`;
+                    feedbackDiv.className = "feedback correct";
+                    input.style.borderColor = "var(--success)";
+                } else {
+                    feedbackDiv.textContent = `✗ Incorrecto. Respuesta correcta: ${pregunta.cmd}`;
+                    feedbackDiv.className = "feedback incorrect";
+                    input.style.borderColor = "var(--error)";
+                }
+            });
+
+            // Mostrar el tablero de puntuación global
+            const scoreBoard = document.getElementById('score-board');
+            scoreBoard.style.display = "block";
+            scoreBoard.textContent = `Resultado final: ${correctas} de ${bancoPreguntas.length} comandos correctos (${Math.round((correctas / bancoPreguntas.length) * 100)}%)`;
+            
+            scoreBoard.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+    </script>
+</body>
+</html>
